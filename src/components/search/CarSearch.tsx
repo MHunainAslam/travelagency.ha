@@ -10,7 +10,7 @@ import { useAsyncSearch } from "@/hooks/useAsyncSearch";
 import { useToday } from "@/hooks/useToday";
 import { addDays, daysBetween, formatDate, formatPrice } from "@/lib/utils";
 import { Field, Input, Select } from "@/components/ui/FormField";
-import { BookButton, ResultsShell, ShowMoreButton, SortSelect, SubmitButton, useResultsView, type SortOption } from "./shared";
+import { BookButton, ResultsShell, SortSelect, SubmitButton, useResultsView, type SortOption } from "./shared";
 
 const CATEGORIES: CarQuery["category"][] = ["Any", "Economy", "SUV", "Luxury", "Sports", "Camper"];
 
@@ -29,7 +29,7 @@ export function CarSearch() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [lastQuery, setLastQuery] = useState<CarQuery | null>(null);
   const { status, data, run } = useAsyncSearch(searchCars);
-  const view = useResultsView(data, CAR_SORTS, 6);
+  const view = useResultsView(data, CAR_SORTS, 3);
 
   const pickUpValue = pickUp ?? (today ? addDays(today, 7) : "");
   const dropOffValue = dropOff ?? (pickUpValue ? addDays(pickUpValue, 4) : "");
@@ -97,7 +97,6 @@ export function CarSearch() {
         status={status}
         count={view.total}
         toolbar={<SortSelect {...view.sort} />}
-        footer={<ShowMoreButton remaining={view.remaining} onClick={view.showMore} noun="cars" />}
         skeleton="grid"
         summary={
           lastQuery && (

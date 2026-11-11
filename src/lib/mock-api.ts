@@ -42,7 +42,7 @@ export async function searchFlights(query: FlightQuery): Promise<Flight[]> {
   // Base duration is stable per route so all options feel consistent.
   const baseDuration = 120 + (routeSeed % 600);
 
-  const results: Flight[] = Array.from({ length: 8 }, (_, i) => {
+  const results: Flight[] = Array.from({ length: 6 }, (_, i) => {
     const airline = airlines[Math.floor(random() * airlines.length)];
     const stops = random() < 0.45 ? 0 : random() < 0.8 ? 1 : 2;
     const durationMins = Math.round(baseDuration + stops * (70 + random() * 110));
@@ -66,7 +66,7 @@ export async function searchFlights(query: FlightQuery): Promise<Flight[]> {
     };
   });
 
-  return results.sort((a, b) => a.totalPrice - b.totalPrice);
+  return results.sort((a, b) => a.totalPrice - b.totalPrice).slice(0, 3);
 }
 
 export async function searchHotels(query: HotelQuery): Promise<HotelResult[]> {
@@ -81,7 +81,8 @@ export async function searchHotels(query: HotelQuery): Promise<HotelResult[]> {
       nights,
       totalPrice: hotel.pricePerNight * nights * query.rooms,
     }))
-    .sort((a, b) => b.rating - a.rating);
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 3);
 }
 
 export async function searchCars(query: CarQuery): Promise<CarResult[]> {
@@ -96,7 +97,8 @@ export async function searchCars(query: CarQuery): Promise<CarResult[]> {
       const pricePerDay = Math.round(car.pricePerDay * locationFactor);
       return { ...car, pricePerDay, days, location: query.location, totalPrice: pricePerDay * days };
     })
-    .sort((a, b) => a.totalPrice - b.totalPrice);
+    .sort((a, b) => a.totalPrice - b.totalPrice)
+    .slice(0, 3);
 }
 
 const VISA_DOCUMENTS: Record<VisaStatus, string[]> = {

@@ -10,7 +10,7 @@ import { useAsyncSearch } from "@/hooks/useAsyncSearch";
 import { useToday } from "@/hooks/useToday";
 import { addDays, daysBetween, formatDate, formatPrice } from "@/lib/utils";
 import { Field, Input, Select } from "@/components/ui/FormField";
-import { BookButton, ResultsShell, ShowMoreButton, SortSelect, SubmitButton, useResultsView, type SortOption } from "./shared";
+import { BookButton, ResultsShell, SortSelect, SubmitButton, useResultsView, type SortOption } from "./shared";
 
 const HOTEL_SORTS: SortOption<HotelResult>[] = [
   { id: "rating", label: "Top rated", compare: (a, b) => b.rating - a.rating },
@@ -29,7 +29,7 @@ export function HotelSearch({ initialCity }: { initialCity?: string }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [lastQuery, setLastQuery] = useState<HotelQuery | null>(null);
   const { status, data, run } = useAsyncSearch(searchHotels);
-  const view = useResultsView(data, HOTEL_SORTS, 6);
+  const view = useResultsView(data, HOTEL_SORTS, 3);
 
   const checkInValue = checkIn ?? (today ? addDays(today, 14) : "");
   const checkOutValue = checkOut ?? (checkInValue ? addDays(checkInValue, 5) : "");
@@ -108,7 +108,6 @@ export function HotelSearch({ initialCity }: { initialCity?: string }) {
         status={status}
         count={view.total}
         toolbar={<SortSelect {...view.sort} />}
-        footer={<ShowMoreButton remaining={view.remaining} onClick={view.showMore} noun="hotels" />}
         summary={
           lastQuery && (
             <>

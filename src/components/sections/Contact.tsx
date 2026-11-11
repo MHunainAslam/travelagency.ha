@@ -192,7 +192,7 @@ export function Contact() {
                       hasIcon={false}
                       onChange={(e) => update("service", e.target.value as ServiceId)}
                     >
-                      <option value="" disabled>
+                      <option value="">
                         Choose a service
                       </option>
                       {services.map((s) => (
@@ -212,7 +212,7 @@ export function Contact() {
                   </Field>
                   <div className="flex flex-col gap-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-sm text-ink-700">We only use your details to reply to you.</p>
-                    <Button type="submit" size="lg" disabled={state === "sending"}>
+                    <Button type="submit" size="lg">
                       {state === "sending" ? "Sending…" : "Send message"}
                       <Send className="size-4" aria-hidden />
                     </Button>

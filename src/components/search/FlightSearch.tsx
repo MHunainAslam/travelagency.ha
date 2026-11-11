@@ -14,7 +14,6 @@ import {
   BookButton,
   PillToggle,
   ResultsShell,
-  ShowMoreButton,
   SortSelect,
   SubmitButton,
   useResultsView,
@@ -45,7 +44,7 @@ export function FlightSearch() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [lastQuery, setLastQuery] = useState<FlightQuery | null>(null);
   const { status, data, run } = useAsyncSearch(searchFlights);
-  const view = useResultsView(data, FLIGHT_SORTS, 5);
+  const view = useResultsView(data, FLIGHT_SORTS, 3);
 
   const departValue = depart ?? (today ? addDays(today, 7) : "");
   const returnValue = ret ?? (departValue ? addDays(departValue, 7) : "");
@@ -111,11 +110,9 @@ export function FlightSearch() {
               id="fl-return"
               type="date"
               min={departValue}
-              value={tripType === "round" ? returnValue : ""}
-              disabled={tripType === "oneway"}
+              value={returnValue}
               onChange={(e) => setRet(e.target.value)}
               aria-invalid={!!errors.ret}
-              className="disabled:cursor-not-allowed disabled:bg-paper-100 disabled:text-ink-700/40"
             />
           </Field>
           <Field label="Travellers" htmlFor="fl-pax" icon={Users}>
@@ -154,7 +151,6 @@ export function FlightSearch() {
         status={status}
         count={view.total}
         toolbar={<SortSelect {...view.sort} />}
-        footer={<ShowMoreButton remaining={view.remaining} onClick={view.showMore} noun="flights" />}
         summary={
           lastQuery && (
             <>

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 export function SubmitButton({ loading, label = "Search" }: { loading: boolean; label?: string }) {
   return (
-    <Button type="submit" size="lg" disabled={loading} className="w-full sm:w-auto sm:min-w-44">
+    <Button type="submit" size="lg" className="w-full sm:w-auto sm:min-w-44">
       {loading ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : <Search className="size-5" aria-hidden />}
       {loading ? "Searching…" : label}
     </Button>
@@ -148,7 +148,7 @@ export function ResultsShell({ status, count, summary, emptyText, children, clas
   if (status === "idle") return null;
 
   return (
-    <div ref={ref} className="mt-8 border-t border-ink-900/8 pt-8" aria-live="polite" aria-busy={status === "loading"}>
+    <div ref={ref} className="mt-6 border-t border-ink-900/8 pt-6" aria-live="polite" aria-busy={status === "loading"}>
       {status === "loading" && (
         <div className={cn("grid gap-4", skeleton === "grid" && "sm:grid-cols-2 lg:grid-cols-3")}>
           {Array.from({ length: 3 }, (_, i) => (
@@ -167,7 +167,7 @@ export function ResultsShell({ status, count, summary, emptyText, children, clas
 
       {status === "success" && count > 0 && (
         <>
-          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-ink-700/80">
               <span className="font-semibold text-ink-900">{count} result{count === 1 ? "" : "s"}</span> · {summary}
             </p>

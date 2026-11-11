@@ -26,7 +26,7 @@ export function Ticket({ children, stub, stubWidth = "15rem", className, bodyCla
         style={style}
         className={cn("grid overflow-hidden rounded-3xl bg-white", stub ? "lg:ticket-v lg:grid-cols-[1fr_var(--stub)]" : undefined)}
       >
-        <div className={cn("min-w-0 p-5 sm:p-8", bodyClassName)}>{children}</div>
+        <div className={cn("min-w-0 p-5 pb-7 sm:p-8 sm:pb-10", bodyClassName)}>{children}</div>
         {stub && (
           <div
             className={cn(
