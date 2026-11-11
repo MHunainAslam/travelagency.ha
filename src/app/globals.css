@@ -1,26 +1,181 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * "Boarding pass" palette: electric cobalt + airport-sign yellow on off-white and near-black.
+ */
+@theme {
+  --color-ink-950: #0a0c11;
+  --color-ink-900: #11141b;
+  --color-ink-800: #1d222c;
+  --color-ink-700: #4a5162;
+
+  --color-brand-300: #b3c0ff;
+  --color-brand-400: #7088ff;
+  --color-brand-500: #2f4bff;
+  --color-brand-600: #2238e0;
+  --color-brand-700: #1a2cb0;
+
+  --color-signal-300: #ffe58f;
+  --color-signal-400: #ffd23f;
+  --color-signal-500: #f5bd00;
+
+  --color-coral-500: #ff6a4d;
+  --color-mint-500: #2fd39a;
+
+  --color-paper-50: #f5f4ef;
+  --color-paper-100: #ebe9e1;
+  --color-paper-200: #dbd8cc;
+
+  --shadow-soft: 0 1px 2px rgb(17 20 27 / 0.06), 0 10px 28px -12px rgb(17 20 27 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(17 20 27 / 0.05), 0 30px 60px -24px rgb(17 20 27 / 0.3);
 }
 
+/* Fonts come from next/font CSS variables set on <html>. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-code), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    /* No CSS smooth scrolling: it conflicts with ScrollTrigger (see ScrollManager). */
+    scroll-padding-top: 5rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-paper-50 font-sans text-ink-900 antialiased;
+  }
+
+  ::selection {
+    @apply bg-signal-400 text-ink-950;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.55;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/*
+ * Ticket with a tear-off stub: two half-height masks punch semicircle notches
+ * into the top and bottom edges at --cut (the perforation line).
+ */
+@utility ticket-v {
+  --r: 14px;
+  mask:
+    radial-gradient(circle at var(--cut) 0, #0000 var(--r), #000 calc(var(--r) + 0.5px)) top / 100% 51% no-repeat,
+    radial-gradient(circle at var(--cut) 100%, #0000 var(--r), #000 calc(var(--r) + 0.5px)) bottom / 100% 51% no-repeat;
+}
+
+/* Faint dot grid, like a departures-hall floor plan. */
+@utility bg-dots {
+  background-image: radial-gradient(rgb(17 20 27 / 0.12) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+@layer components {
+  /*
+   * Elements GSAP animates in are hidden before hydration so they don't flash
+   * visible and then disappear. Only applies when JS runs and motion is allowed;
+   * the delayed animation is a failsafe in case scripts fail to hydrate.
+   */
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    [data-anim] {
+      visibility: hidden;
+      animation: anim-failsafe 0s linear 4s forwards;
+    }
+  }
+
+  /* One tile of the split-flap departure board. */
+  .flap {
+    position: relative;
+    display: grid;
+    place-items: center;
+    perspective: 400px;
+    border-radius: 0.3em;
+    background: linear-gradient(to bottom, #232834 0 50%, #1a1e27 50% 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.06),
+      0 2px 0 rgb(0 0 0 / 0.4);
+    color: var(--color-signal-400);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    line-height: 1;
+  }
+  .flap::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    height: 1px;
+    background: rgb(0 0 0 / 0.65);
+  }
+  .flap > span {
+    display: block;
+    backface-visibility: hidden;
+    transform-origin: 50% 50%;
+  }
+
+  /* Text link whose underline draws in from the left on hover. */
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1.5px;
+    transition: background-size 0.3s ease;
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1.5px;
+  }
+
+  /* Loading placeholder shimmer. */
+  .skeleton {
+    background: linear-gradient(100deg, var(--color-paper-100) 30%, var(--color-paper-200) 50%, var(--color-paper-100) 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.3s linear infinite;
+  }
+
+  /* Blinking status light on the departures board. */
+  .blink {
+    animation: blink 1.1s steps(2, start) infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .blink {
+      animation: none;
+    }
+  }
+}
+
+@keyframes anim-failsafe {
+  to {
+    visibility: visible;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/*
+ * Small phones: date fields sit two per row, so drop their leading icon to
+ * give the date text room. (Unlayered, so it wins over utility padding.)
+ */
+@media (max-width: 639px) {
+  svg:has(~ input[type="date"]) {
+    display: none;
+  }
+  input[type="date"] {
+    padding-left: 0.75rem;
+  }
 }
